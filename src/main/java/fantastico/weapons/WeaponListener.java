@@ -1,7 +1,6 @@
 package fantastico.weapons;
 
 import io.papermc.paper.event.entity.EntityLoadCrossbowEvent;
-import org.apache.commons.lang3.NotImplementedException;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,8 +8,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class WeaponListener implements Listener {
+
     @EventHandler
     public void onWeaponShot(EntityShootBowEvent event){
         if(event.getEntity() instanceof Player player){
@@ -60,6 +61,7 @@ public class WeaponListener implements Listener {
 
     @EventHandler
     public void onWeaponReloadingStart(PlayerInteractEvent event){
+        //TODO verhindern, dass das event auch bei schießen triggert
         if(event.getAction().isRightClick() && event.hasItem()){
             ItemStack weapon = event.getItem();
             if(weapon != null && weapon.getType() == Material.CROSSBOW){
@@ -75,6 +77,8 @@ public class WeaponListener implements Listener {
                     switch (weaponModel){
                         case String s when s.startsWith("zyneon:revolver"):
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.revolver_loading_start",1f,1f);
+                            //delay?
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.revolver_loading_middle",1f,1f);
                             break;
                         case String s when s.startsWith("zyneon:shotgun"):
 
@@ -108,6 +112,44 @@ public class WeaponListener implements Listener {
 
     @EventHandler
     public void onWeapomReloadingEnd(EntityLoadCrossbowEvent event){
-        throw new NotImplementedException();
+        if(event.getEntity() instanceof Player player){
+            var meta = event.getCrossbow().getItemMeta();
+            if(!meta.hasItemModel()){
+
+            }
+            else if(meta.hasItemModel()){
+                String weaponModel = meta.getItemModel().toString();
+
+                switch(weaponModel){
+                    case String s when s.startsWith("zyneon:revolver"):
+                        player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.revolver_loading_end",1f,1f);
+                        break;
+                    case String s when s.startsWith("zyneon:shotgun"):
+
+                        break;
+                    case String s when s.startsWith("zyneon:marksman_pistol"):
+
+                        break;
+                    case String s when s.startsWith("zyneon:mauser_c96"):
+
+                        break;
+                    case String s when s.startsWith("zyneon:lewis_gun"):
+
+                        break;
+                    case String s when s.startsWith("zyneon:luger"):
+
+                        break;
+                    case String s when s.startsWith("zyneon:rifle"):
+
+                        break;
+                    case String s when s.startsWith("zyneon:sniper_rifle"):
+
+                        break;
+                    default:
+
+                        break;
+                }
+            }
+        }
     }
 }
