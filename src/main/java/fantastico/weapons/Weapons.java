@@ -9,7 +9,7 @@ public final class Weapons extends JavaPlugin implements Listener {
     public void onEnable() {
         // Plugin startup logic
         getLogger().info("Weapons-Plugin enabled");
-        getServer().getPluginManager().registerEvents(new WeaponListener(), this);
+        getServer().getPluginManager().registerEvents(new WeaponListener(this), this);
     }
 
     @Override
