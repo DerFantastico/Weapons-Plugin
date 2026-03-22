@@ -37,25 +37,25 @@ public class WeaponListener implements Listener {
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.revolver_shoot",1f,1f);
                             break;
                         case String s when s.startsWith("zyneon:shotgun"):
-                            //TODO Sounds hinzufügen
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.shotgun_shoot",1f,1f);
                             break;
                         case String s when s.startsWith("zyneon:marksman_pistol"):
-
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.marksman_pistol_shoot",1f,1f);
                             break;
                         case String s when s.startsWith("zyneon:mauser_c96"):
-
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.mauser_c96_shoot",1f,1f);
                             break;
                         case String s when s.startsWith("zyneon:lewis_gun"):
-
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.lewis_gun_shoot",1f,1f);
                             break;
                         case String s when s.startsWith("zyneon:luger"):
-
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.luger_shoot",1f,1f);
                             break;
                         case String s when s.startsWith("zyneon:rifle"):
-
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_shoot",1f,1f);
                             break;
                         case String s when s.startsWith("zyneon:sniper_rifle"):
-
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_shoot",1f,1f);
                             break;
                         default:
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.crossbow_shoot", 1f,1f);
@@ -94,25 +94,32 @@ public class WeaponListener implements Listener {
                             playWeaponReloadingMiddle(player,"zyneon:crossbow.revolver_loading_middle");
                             break;
                         case String s when s.startsWith("zyneon:shotgun"):
-
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.shotgun_loading_start",1f,1f);
+                            playWeaponReloadingMiddle(player,"zyneon:crossbow.shotgun_loading_middle");
                             break;
                         case String s when s.startsWith("zyneon:marksman_pistol"):
-
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.marksman_pistol_loading_start",1f,1f);
+                            playWeaponReloadingMiddle(player,"zyneon:crossbow.marksman_pistol_loading_middle");
                             break;
                         case String s when s.startsWith("zyneon:mauser_c96"):
-
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.mauser_c96_loading_start",1f,1f);
+                            playWeaponReloadingMiddle(player,"zyneon:crossbow.mauser_c96_loading_middle");
                             break;
                         case String s when s.startsWith("zyneon:lewis_gun"):
-
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.lewis_gun_loading_start",1f,1f);
+                            playWeaponReloadingMiddle(player,"zyneon:crossbow.lewis_gun_loading_middle");
                             break;
                         case String s when s.startsWith("zyneon:luger"):
-
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.luger_loading_start",1f,1f);
+                            playWeaponReloadingMiddle(player,"zyneon:crossbow.luger_loading_middle");
                             break;
                         case String s when s.startsWith("zyneon:rifle"):
-
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_loading_start",1f,1f);
+                            playWeaponReloadingMiddle(player,"zyneon:crossbow.rifle_loading_middle");
                             break;
                         case String s when s.startsWith("zyneon:sniper_rifle"):
-
+                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_loading_start",1f,1f);
+                            playWeaponReloadingMiddle(player,"zyneon:crossbow.rifle_loading_middle");
                             break;
                         default:
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.crossbow_loading_start", 1f, 1f);
@@ -147,25 +154,25 @@ public class WeaponListener implements Listener {
                         player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.revolver_loading_end",1f,1f);
                         break;
                     case String s when s.startsWith("zyneon:shotgun"):
-
+                        player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.shotgun_loading_end",1f,1f);
                         break;
                     case String s when s.startsWith("zyneon:marksman_pistol"):
-
+                        player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.marksman_pistol_loading_end",1f,1f);
                         break;
                     case String s when s.startsWith("zyneon:mauser_c96"):
-
+                        player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.mauser_c96_loading_end",1f,1f);
                         break;
                     case String s when s.startsWith("zyneon:lewis_gun"):
-
+                        player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.lewis_gun_loading_end",1f,1f);
                         break;
                     case String s when s.startsWith("zyneon:luger"):
-
+                        player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.luger_loading_end",1f,1f);
                         break;
                     case String s when s.startsWith("zyneon:rifle"):
-
+                        player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_loading_end",1f,1f);
                         break;
                     case String s when s.startsWith("zyneon:sniper_rifle"):
-
+                        player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_loading_end",1f,1f);
                         break;
                     default:
                         player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.crossbow_loading_end", 1f, 1f);
