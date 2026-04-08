@@ -2,7 +2,11 @@ package fantastico.weapons;
 
 import io.papermc.paper.event.entity.EntityLoadCrossbowEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.entity.AbstractArrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,6 +14,8 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CrossbowMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 public class WeaponListener implements Listener {
 
@@ -61,6 +67,38 @@ public class WeaponListener implements Listener {
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.crossbow_shoot", 1f,1f);
                             break;
                     }
+
+                    Entity projectile = event.getProjectile();
+                    if (projectile instanceof AbstractArrow arrow) {
+                        arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
+
+                        for (Player all : org.bukkit.Bukkit.getOnlinePlayers()) {
+                            all.hideEntity(this.plugin, arrow);
+                        }
+
+                        new BukkitRunnable(){
+                            Location lastPos = arrow.getLocation();
+
+                            @Override
+                            public void run(){
+                                if (arrow.isDead() || arrow.isOnGround() || !arrow.isValid()) {
+                                    this.cancel();
+                                    return;
+                                }
+
+                                Location currentPos = arrow.getLocation();
+                                double distance = lastPos.distance(currentPos);
+                                Vector direction = currentPos.toVector().subtract(lastPos.toVector()).normalize();
+
+                                for(double d = 0; d < distance; d += 0.5){
+                                    Location loc = lastPos.clone().add(direction.clone().multiply(d));
+                                    arrow.getWorld().spawnParticle(Particle.SMOKE,loc,1,0,0,0,0.01);
+                                }
+
+                                lastPos = currentPos.clone();
+                            }
+                        }.runTaskTimer(plugin,0,1);
+                    }
                 }
             }
         }
@@ -68,7 +106,6 @@ public class WeaponListener implements Listener {
 
     @EventHandler
     public void onWeaponReloadingStart(PlayerInteractEvent event){
-        //TODO verhindern, dass das event auch bei schießen triggert
         if(event.getAction().isRightClick() && event.hasItem()){
             ItemStack weapon = event.getItem();
             if(weapon != null && weapon.getType() == Material.CROSSBOW){
