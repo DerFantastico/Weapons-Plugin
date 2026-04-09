@@ -1,10 +1,8 @@
 package fantastico.weapons;
 
 import io.papermc.paper.event.entity.EntityLoadCrossbowEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import net.kyori.adventure.text.Component;
+import org.bukkit.*;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -12,17 +10,24 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CrossbowMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import java.util.List;
+import java.awt.*;
 
 public class WeaponListener implements Listener {
 
     private final Weapons plugin;
+    private final NamespacedKey ammoKey;
 
     public WeaponListener(Weapons plugin){
         this.plugin = plugin;
+        ammoKey = new NamespacedKey(this.plugin, "ammo");
     }
 
     @EventHandler
@@ -37,6 +42,8 @@ public class WeaponListener implements Listener {
                 }
                 else if(meta.hasItemModel()){
                     String weaponModel = meta.getItemModel().toString();
+                    double damage = 1.0;
+                    double velocity = 1.0;
 
                     switch (weaponModel){
                         case String s when s.startsWith("zyneon:revolver"):
@@ -47,21 +54,32 @@ public class WeaponListener implements Listener {
                             break;
                         case String s when s.startsWith("zyneon:marksman_pistol"):
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.marksman_pistol_shoot",1f,1f);
+                            damage = 2.5;
                             break;
                         case String s when s.startsWith("zyneon:mauser_c96"):
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.mauser_c96_shoot",1f,1f);
+                            AutomaticReload(player, weapon,8);
+                            damage = 0.5;
                             break;
                         case String s when s.startsWith("zyneon:lewis_gun"):
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.lewis_gun_shoot",1f,1f);
+                            AutomaticReload(player, weapon,48);
+                            damage = 0.1;
                             break;
                         case String s when s.startsWith("zyneon:luger"):
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.luger_shoot",1f,1f);
+                            AutomaticReload(player, weapon,8);
+                            damage = 0.5;
                             break;
                         case String s when s.startsWith("zyneon:rifle"):
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_shoot",1f,1f);
+                            velocity = 2.0;
+                            damage = 4.0;
                             break;
                         case String s when s.startsWith("zyneon:sniper_rifle"):
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_shoot",1f,1f);
+                            velocity = 2.0;
+                            damage = 4.0;
                             break;
                         default:
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.crossbow_shoot", 1f,1f);
@@ -71,6 +89,9 @@ public class WeaponListener implements Listener {
                     Entity projectile = event.getProjectile();
                     if (projectile instanceof AbstractArrow arrow) {
                         arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
+                        arrow.setSilent(true);
+                        arrow.setVelocity(arrow.getVelocity().multiply(velocity));
+                        arrow.setDamage(damage);
 
                         for (Player all : org.bukkit.Bukkit.getOnlinePlayers()) {
                             all.hideEntity(this.plugin, arrow);
@@ -81,7 +102,12 @@ public class WeaponListener implements Listener {
 
                             @Override
                             public void run(){
-                                if (arrow.isDead() || arrow.isOnGround() || !arrow.isValid()) {
+                                if(arrow.isOnGround()){
+                                    arrow.remove();
+                                    this.cancel();
+                                    return;
+                                }
+                                if (arrow.isDead() || !arrow.isValid()) {
                                     this.cancel();
                                     return;
                                 }
@@ -113,7 +139,7 @@ public class WeaponListener implements Listener {
                 Player player = event.getPlayer();
 
                 if(meta instanceof CrossbowMeta cbMeta){
-                    if(cbMeta.hasChargedProjectiles()){
+                    if(cbMeta.hasChargedProjectiles() || !player.getInventory().contains(Material.ARROW) && player.getGameMode() != GameMode.CREATIVE){
                         return;
                     }
                 }
@@ -198,12 +224,18 @@ public class WeaponListener implements Listener {
                         break;
                     case String s when s.startsWith("zyneon:mauser_c96"):
                         player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.mauser_c96_loading_end",1f,1f);
+                        meta.lore(List.of(Component.text("§7Ammo: §e8/8")));
+                        event.getCrossbow().setItemMeta(meta);
                         break;
                     case String s when s.startsWith("zyneon:lewis_gun"):
                         player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.lewis_gun_loading_end",1f,1f);
+                        meta.lore(List.of(Component.text("§7Ammo: §e48/48")));
+                        event.getCrossbow().setItemMeta(meta);
                         break;
                     case String s when s.startsWith("zyneon:luger"):
                         player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.luger_loading_end",1f,1f);
+                        meta.lore(List.of(Component.text("§7Ammo: §e8/8")));
+                        event.getCrossbow().setItemMeta(meta);
                         break;
                     case String s when s.startsWith("zyneon:rifle"):
                         player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_loading_end",1f,1f);
@@ -216,6 +248,58 @@ public class WeaponListener implements Listener {
                         break;
                 }
             }
+        }
+    }
+
+    private void AutomaticReload(Player player, ItemStack weapon, int magSize){
+        ItemMeta meta = weapon.getItemMeta();
+
+        if (!meta.getPersistentDataContainer().has(ammoKey, PersistentDataType.INTEGER)) {
+            meta.getPersistentDataContainer().set(ammoKey, PersistentDataType.INTEGER, magSize);
+        }
+
+        int currentAmmo = meta.getPersistentDataContainer().getOrDefault(ammoKey, PersistentDataType.INTEGER, 0);
+
+        if(currentAmmo > 1){
+            if(!player.getInventory().contains(Material.ARROW) && player.getGameMode() != GameMode.CREATIVE){
+                meta.getPersistentDataContainer().set(ammoKey, PersistentDataType.INTEGER, magSize);
+                meta.lore(List.of(Component.text("§7Ammo: §e0/"+magSize)));
+                weapon.setItemMeta(meta);
+                return;
+            }
+
+            if(player.getGameMode() != GameMode.CREATIVE){
+                player.getInventory().removeItem(new ItemStack(Material.ARROW,1));
+            }
+
+            int newAmmo = currentAmmo - 1;
+            meta.getPersistentDataContainer().set(ammoKey, PersistentDataType.INTEGER, newAmmo);
+            meta.lore(List.of(Component.text("§7Ammo: §e"+newAmmo+"/"+magSize)));
+
+            weapon.setItemMeta(meta);
+
+            new BukkitRunnable(){
+                @Override
+                public  void run(){
+                    if(meta instanceof CrossbowMeta cbMeta){
+                        cbMeta.addChargedProjectile(new ItemStack(Material.ARROW));
+                        weapon.setItemMeta(cbMeta);
+                    }
+                }
+            }.runTaskLater(plugin,1L);
+        }else{
+            meta.getPersistentDataContainer().set(ammoKey, PersistentDataType.INTEGER, magSize);
+            meta.lore(List.of(Component.text("§7Ammo: §e0/"+magSize)));
+            weapon.setItemMeta(meta);
+        }
+    }
+
+    @EventHandler
+    public void onSneak(PlayerToggleSneakEvent event){
+        if(event.isSneaking()){
+            //TODO Sniper Zoom on Sneak
+        } else {
+
         }
     }
 }
