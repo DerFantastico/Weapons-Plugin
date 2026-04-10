@@ -10,7 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CrossbowMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -72,11 +71,6 @@ public class WeaponListener implements Listener {
                             damage = 0.5;
                             break;
                         case String s when s.startsWith("zyneon:rifle"):
-                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_shoot",1f,1f);
-                            velocity = 2.0;
-                            damage = 4.0;
-                            break;
-                        case String s when s.startsWith("zyneon:sniper_rifle"):
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_shoot",1f,1f);
                             velocity = 2.0;
                             damage = 4.0;
@@ -180,10 +174,6 @@ public class WeaponListener implements Listener {
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_loading_start",1f,1f);
                             playWeaponReloadingMiddle(player,"zyneon:crossbow.rifle_loading_middle");
                             break;
-                        case String s when s.startsWith("zyneon:sniper_rifle"):
-                            player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_loading_start",1f,1f);
-                            playWeaponReloadingMiddle(player,"zyneon:crossbow.rifle_loading_middle");
-                            break;
                         default:
                             player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.crossbow_loading_start", 1f, 1f);
                             playWeaponReloadingMiddle(player,"zyneon:crossbow.crossbow_loading_middle");
@@ -240,9 +230,6 @@ public class WeaponListener implements Listener {
                     case String s when s.startsWith("zyneon:rifle"):
                         player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_loading_end",1f,1f);
                         break;
-                    case String s when s.startsWith("zyneon:sniper_rifle"):
-                        player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.rifle_loading_end",1f,1f);
-                        break;
                     default:
                         player.getWorld().playSound(player.getLocation(), "zyneon:crossbow.crossbow_loading_end", 1f, 1f);
                         break;
@@ -291,15 +278,6 @@ public class WeaponListener implements Listener {
             meta.getPersistentDataContainer().set(ammoKey, PersistentDataType.INTEGER, magSize);
             meta.lore(List.of(Component.text("§7Ammo: §e0/"+magSize)));
             weapon.setItemMeta(meta);
-        }
-    }
-
-    @EventHandler
-    public void onSneak(PlayerToggleSneakEvent event){
-        if(event.isSneaking()){
-            //TODO Sniper Zoom on Sneak
-        } else {
-
         }
     }
 }
